@@ -1,0 +1,64 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "alwaysStrict": true,
+    "moduleResolution": "Node",
+    "lib": [
+      "ESNext",
+      "ESNext.AsyncIterable",
+      "DOM",
+      "es2019",
+      "es2020.bigint",
+      "es2020.string",
+      "es2020.symbol.wellknown"
+    ],
+    "allowJs": true,
+    "sourceMap": true,
+    "strict": true,
+    "noEmit": true,
+    "experimentalDecorators": true,
+    "declaration": true,
+    "paths": {
+      "~/*": ["./*"],
+      "@/*": ["./*"]
+    },
+    "types": [
+      "@nuxt/types",
+      "@types/node",
+      "@nuxtjs/axios",
+      "node",
+      "cookie-universal-nuxt"
+    ]
+  },
+  "exclude": ["node_modules", ".nuxt", "dist"]
+}
+// {
+//   "compilerOptions": {
+//     "target": "ES2018",
+//     "module": "ESNext",
+//     "moduleResolution": "Node",
+//     "lib": ["ESNext", "ESNext.AsyncIterable", "DOM"],
+//     "esModuleInterop": true,
+//     "allowJs": true,
+//     "sourceMap": true,
+//     "strict": true,
+//     "noEmit": true,
+//     "baseUrl": ".",
+//     "paths": {
+//       "~/*": ["./*"],
+//       "@/*": ["./*"]
+//     },
+//     "types": [
+//       "@types/node",
+//       "@nuxt/types",
+//       "@nuxtjs/axios",
+//       "cookie-universal-nuxt"
+//     ]
+//   },
+//   "exclude": ["node_modules"]
+// }
