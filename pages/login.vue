@@ -58,7 +58,7 @@ export default {
       const res: Res = await Util.post({
         self: this,
         url: "https://stg.ebsoc.co.kr/auth/api/v1/login",
-        param: param,
+        params: param,
       });
 
       if (res.data.status === 404) {

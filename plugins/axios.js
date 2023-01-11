@@ -8,7 +8,7 @@ export default function ({ $axios, redirect }) {
     const code = parseInt(error.response && error.response.status);
 
     if (code === 404) {
-      redirect("/404");
+      // redirect("/404");
     } else if (code === 500) {
       $nuxt.error({
         statusCode: error.response.status,

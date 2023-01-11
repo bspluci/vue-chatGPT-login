@@ -1,12 +1,11 @@
 <template>
   <div>
-    <Todos />
-    <p>{{ age }}</p>
-    <p>{{ location }}</p>
-    <p>{{ name }}</p>
+    <button @click="setMemberInfo">회원정보 불러오기</button>
 
-    <nuxt-link to="/posts">posts이동</nuxt-link>
-    <nuxt-link to="/tstest">tstest이동</nuxt-link>
+    <Todos />
+    <nuxt-link to="/posts" class="btn btn-success">posts</nuxt-link>
+    <nuxt-link to="/tstest" class="btn btn-warning">typescript</nuxt-link>
+    <nuxt-link to="/node" class="btn btn-info">nodejs</nuxt-link>
     <br />
     <br />
     <div>
@@ -49,6 +48,7 @@
 
 <script lang="ts">
 import moment from "moment";
+import Util from "../module/Util";
 import { Configuration, OpenAIApi } from "openai";
 
 interface Data {
@@ -63,6 +63,9 @@ interface Data {
   aiMessage: string;
   chatMessage: { target: string | undefined; message: string | undefined }[];
   apiKeys: string;
+}
+interface Member {
+  [key: string]: string | number;
 }
 
 export default {
@@ -91,6 +94,12 @@ export default {
     const newDate: string = moment().format("YYYY-MM-DD HH:mm:ss");
   },
   methods: {
+    async setMemberInfo() {
+      let url = "https://stg.ebsoc.co.kr/common/api/v1/member";
+      let memberInfo: Member = await Util.get({ self: this, url });
+
+      this.$store.commit("memberInfo/setMemberInfo", memberInfo.data);
+    },
     async getDrawingAi() {
       if (!this.aiText) return alert("생성할 이미지 태그를 입력해주세요.");
 
@@ -210,7 +219,7 @@ export default {
 .chat_text {
   overflow-y: auto;
   width: 100%;
-  height: 450px;
+  height: 95%;
   padding-bottom: 15px;
 }
 .chat_talk {
@@ -229,17 +238,19 @@ export default {
   margin-left: auto;
 }
 .chat_input {
+  display: flex;
   text-align: center;
+  margin-bottom: 20px;
 }
 .chat_input > input {
-  width: calc(70% - 20px);
+  width: 70%;
   height: 30px;
   margin-right: 2%;
   text-align: left;
   box-sizing: border-box;
 }
 .chat_input > button {
-  width: calc(20% - 20px);
+  width: 30%;
   height: 30px;
   margin-left: 2%;
   box-sizing: border-box;

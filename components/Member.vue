@@ -17,15 +17,15 @@
 export default {
   data() {
     return {
-      showLoginText: false,
+      showLoginText: true,
     };
   },
   mounted() {
-    this.showLoginText = this.$store.state.memberInfo.memberInfo ? false : true;
+    this.showLoginText = this.$store.state.auth.auth ? false : true;
   },
   computed: {
     isLogin() {
-      return this.$store.state.memberInfo.memberInfo;
+      return this.$store.state.auth.auth;
     },
   },
   watch: {
@@ -37,6 +37,8 @@ export default {
     async deleteMemberInfo() {
       this.$store.commit("memberInfo/setMemberInfo", null);
       this.$store.commit("auth/setAuth", "");
+      this.$cookies.removeAll();
+      this.$router.push("/");
     },
   },
 };

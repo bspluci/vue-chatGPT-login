@@ -1,7 +1,6 @@
 <template>
   <div>
-    <br />
-    <button @click="setMemberInfo">회원정보 불러오기</button>
+    <h1>TODO</h1>
     <ul>
       <li v-for="(todo, idx) in todos" :key="idx">
         <input type="checkbox" :checked="todo.done" @change="toggle(todo)" />
@@ -17,10 +16,6 @@
 
 <script lang="ts">
 import { mapMutations, mapGetters } from "vuex";
-
-interface Data {
-  [key: string]: string | number;
-}
 
 export default {
   computed: {
@@ -42,12 +37,6 @@ export default {
       remove: "remove",
       add: "add",
     }),
-    async setMemberInfo() {
-      let url = "/cls/api/v1/member";
-
-      let memberInfo: Data = await this.$axios.$get(url);
-      this.$store.commit("memberInfo/setMemberInfo", memberInfo.data);
-    },
     addTodo(e: { [key: string]: any }) {
       // this.$store.commit("todos/add", e.target.value);
       this.add(e.target.value);
