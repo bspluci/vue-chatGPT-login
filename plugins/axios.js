@@ -5,16 +5,11 @@ export default function ({ $axios, redirect }) {
   });
 
   $axios.onError((error) => {
-    const code = parseInt(error.response && error.response.status);
+    const status = error.response.data.status;
+    const code = parseInt(error.response.data.code || error.response.status);
 
-    if (code === 404) {
-      // redirect("/404");
-    } else if (code === 500) {
-      $nuxt.error({
-        statusCode: error.response.status,
-      });
-    } else {
-      alert(`ERROR : ${error.message}`);
-    }
+    status === "Token Expired Error" || status === "JsonWeb Token Error"
+      ? (redirect("/logout"), alert(error.response.data.message))
+      : alert(error.response.data.message);
   });
 }

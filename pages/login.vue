@@ -1,32 +1,41 @@
 <template>
   <div>
-    <div>
-      <label>아이디</label>
+    <br />
+    <div style="margin-bottom: 15px">
+      <label class="input-label">이메일</label>
       <input
+        ref="inputEmail"
         type="text"
-        v-model="memberId"
+        v-model="param.email"
         @keypress.enter="passwordCursor()"
       />
     </div>
     <div>
-      <label>비밀번호</label>
+      <label class="input-label">비밀번호</label>
       <input
-        ref="passwordInput"
+        ref="inputPassword"
         type="password"
-        v-model="memberPw"
+        v-model="param.password"
         @keypress.enter="login()"
       />
     </div>
-    <button @click="login()">로그인</button>
+    <br />
+    <button class="btn btn-success" @click="login()">로그인</button>
+    <button class="btn btn-warning" @click="$router.push('/register')">
+      회원가입
+    </button>
   </div>
 </template>
 
 <script lang="ts">
 import Util from "../module/Util";
+import { mapMutations } from "vuex";
 
 interface Data {
-  memberId: string;
-  memberPw: string;
+  param: {
+    email: string;
+    password: string;
+  };
 }
 
 type Res = void | any;
@@ -35,14 +44,22 @@ export default {
   name: "login",
   data(): Data {
     return {
-      memberId: "",
-      memberPw: "",
+      param: {
+        email: "",
+        password: "",
+      },
     };
   },
   mounted() {
-    // this.$route.query.alert === "true" ? alert("로그인해주세요~") : null;
+    if (this.$store.state.auth.token) this.$router.push("/");
   },
   methods: {
+    ...mapMutations("auth", {
+      setAuth: "setAuth",
+    }),
+    ...mapMutations("memberInfo", {
+      setMemberInfo: "setMemberInfo",
+    }),
     passwordCursor() {
       let passwordInput = this.$refs.passwordInput;
       if (passwordInput instanceof HTMLInputElement) {
@@ -50,32 +67,28 @@ export default {
       }
     },
     async login() {
-      const param = {
-        memberId: this.memberId,
-        memberPassword: this.memberPw,
-      };
-
-      const res: Res = await Util.post({
+      let resLogin = await Util.post({
         self: this,
-        url: "https://stg.ebsoc.co.kr/auth/api/v1/login",
-        params: param,
+        url: "http://localhost:8080/api/member/login",
+        params: this.param,
       });
 
-      if (res.data.status === 404) {
-        this.memberId = "";
-        this.memberPw = "";
-        return alert(res.data.message);
-      }
+      if (resLogin.data.status === 200) {
+        this.setAuth(resLogin.data.token);
 
-      if (res?.data?.data) {
-        this.$store.commit(
-          "memberInfo/setMemberInfo",
-          res.data.data.memberInfo
-        );
-        this.$store.commit("auth/setAuth", res.data.data.token);
-        this.$router.push("/");
+        await Util.post({
+          self: this,
+          url: "http://localhost:8080/api/member/userInfo",
+          params: this.param,
+        }).then((res: Res) => {
+          if (res.data.status === 200) {
+            this.setMemberInfo(res.data.data);
+          }
+          this.$router.push("/");
+        });
       } else {
-        alert("로그인 실패");
+        this.param.email = "";
+        this.param.password = "";
       }
     },
   },

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>TODO</h1>
+    <h1>VUEX TODO</h1>
     <ul>
       <li v-for="(todo, idx) in todos" :key="idx">
         <input type="checkbox" :checked="todo.done" @change="toggle(todo)" />

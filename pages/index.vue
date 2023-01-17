@@ -1,8 +1,8 @@
 <template>
   <div>
-    <button @click="setMemberInfo">회원정보 불러오기</button>
-
+    <br />
     <Todos />
+    <br />
     <nuxt-link to="/posts" class="btn btn-success">posts</nuxt-link>
     <nuxt-link to="/tstest" class="btn btn-warning">typescript</nuxt-link>
     <nuxt-link to="/node" class="btn btn-info">nodejs</nuxt-link>
@@ -64,9 +64,6 @@ interface Data {
   chatMessage: { target: string | undefined; message: string | undefined }[];
   apiKeys: string;
 }
-interface Member {
-  [key: string]: string | number;
-}
 
 export default {
   // layout: "dark",
@@ -94,12 +91,6 @@ export default {
     const newDate: string = moment().format("YYYY-MM-DD HH:mm:ss");
   },
   methods: {
-    async setMemberInfo() {
-      let url = "https://stg.ebsoc.co.kr/common/api/v1/member";
-      let memberInfo: Member = await Util.get({ self: this, url });
-
-      this.$store.commit("memberInfo/setMemberInfo", memberInfo.data);
-    },
     async getDrawingAi() {
       if (!this.aiText) return alert("생성할 이미지 태그를 입력해주세요.");
 

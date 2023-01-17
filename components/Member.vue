@@ -1,13 +1,15 @@
 <template>
   <div>
     <div style="display: flex; align-items: center">
-      <nuxt-link to="/">HOME</nuxt-link>
+      <nuxt-link to="/" class="btn btn-primary" style="margin-right: 10px"
+        >HOME</nuxt-link
+      >
 
       <div v-if="showLoginText">
-        <nuxt-link to="/login">로그인</nuxt-link>
+        <nuxt-link to="/login" class="btn btn-secondary">로그인</nuxt-link>
       </div>
       <div v-else>
-        <button @click="deleteMemberInfo">로그아웃</button>
+        <button @click="logout()" class="btn btn-secondary">로그아웃</button>
       </div>
     </div>
   </div>
@@ -15,17 +17,18 @@
 
 <script lang="ts">
 export default {
+  name: "member",
   data() {
     return {
       showLoginText: true,
     };
   },
   mounted() {
-    this.showLoginText = this.$store.state.auth.auth ? false : true;
+    this.showLoginText = this.$store.state.auth.token ? false : true;
   },
   computed: {
     isLogin() {
-      return this.$store.state.auth.auth;
+      return this.$store.state.auth.token;
     },
   },
   watch: {
@@ -34,11 +37,8 @@ export default {
     },
   },
   methods: {
-    async deleteMemberInfo() {
-      this.$store.commit("memberInfo/setMemberInfo", null);
-      this.$store.commit("auth/setAuth", "");
-      this.$cookies.removeAll();
-      this.$router.push("/");
+    async logout() {
+      this.$router.push("/logout");
     },
   },
 };

@@ -1,14 +1,19 @@
 <template>
   <div>
+    <br />
     <div>
-      <button @click="loadHtml('nav')">load to nav</button>
-      <button @click="loadHtml('slider')">load to slider</button>
+      <button @click="loadHtml('nav')" class="btn btn-warning">
+        load to nav
+      </button>
+      <button @click="loadHtml('slider')" class="btn btn-warning">
+        load to slider
+      </button>
     </div>
     <div>
       <div ref="nav"></div>
+      <br />
       <div ref="slider"></div>
     </div>
-    <br />
     <br />
 
     <div>
@@ -33,8 +38,7 @@
           @keypress.enter="saveTodo()"
         />
       </div>
-      <br />
-      <div style="text-align: center">
+      <div style="text-align: center; margin-top: 15px">
         <button type="submit" class="btn btn-primary" @click="saveTodo()">
           등록
         </button>
@@ -116,7 +120,7 @@ interface ListItem {
 }
 
 export default {
-  name: "nodeTest",
+  name: "node",
   components: { Detail },
   data() {
     return {

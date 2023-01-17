@@ -1,3 +1,4 @@
+let TOKEN = "";
 interface Post {
   self: any;
   url: string;
@@ -14,7 +15,10 @@ export default class Util {
         "Access-Control-Allow-Methods": "PUT, GET, POST",
       };
 
+      let authToken = { "X-AUTH-TOKEN": self.$store.state.auth.token };
+
       header ? (headers = { ...header, ...headers }) : null;
+      authToken ? (headers = { ...headers, ...authToken }) : null;
 
       let res = await self.$axios.post(url, params, { headers });
 
@@ -35,6 +39,8 @@ export default class Util {
         "Access-Control-Allow-Methods": "PUT, GET, POST",
       };
 
+      let authToken = { "X-AUTH-TOKEN": self.$store.state.auth.token };
+      headers = { ...headers, ...authToken };
       header ? (headers = { ...header, ...headers }) : null;
 
       let res = await self.$axios.get(url, { params, headers });
@@ -46,5 +52,11 @@ export default class Util {
         return e.response;
       }
     }
+  }
+
+  public static async logout(self: any) {
+    self.setAuth("");
+    self.setMemberInfo(null);
+    (self as any).$cookies.removeAll();
   }
 }

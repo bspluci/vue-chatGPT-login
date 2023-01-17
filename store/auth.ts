@@ -1,23 +1,20 @@
 export const state = () => ({
-  auth: "",
+  token: "",
 });
 
 interface State {
-  auth: string;
+  token: string;
 }
 
 export const getters = {
   getAuthState(state: State) {
-    return state.auth;
+    return state.token;
   },
 };
 
 export const mutations = {
   setAuth(state: State, payload: string) {
-    state.auth = payload;
-
-    payload
-      ? (this as any).$cookies.set("auth", payload)
-      : (this as any).$cookies.removeAll();
+    state.token = payload;
+    (this as any).$cookies.set("token", payload, 0);
   },
 };
