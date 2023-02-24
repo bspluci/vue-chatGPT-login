@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div>블로그 레이아웃 입니다.</div>
+  <div class="wrap">
+    <div>회원정보 전용 레이아웃 입니다.</div>
     <nuxt />
   </div>
 </template>

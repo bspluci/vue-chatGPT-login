@@ -1,8 +1,6 @@
 export default {
-  // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
   ssr: true,
 
-  // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: "my-project",
     htmlAttrs: {
@@ -17,14 +15,10 @@ export default {
     link: [
       { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
       {
-        href: "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css",
         rel: "stylesheet",
       },
     ],
     script: [
-      {
-        src: "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js",
-      },
       {
         src: "https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js",
       },
@@ -34,26 +28,24 @@ export default {
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: ["@/assets/css/main.css", "@/assets/css/reset.css"],
 
-  // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: ["@/plugins/axios", { src: "~/plugins/persistedState.client.js" }],
+  plugins: [
+    "@/plugins/main.ts",
+    "@/plugins/axios.ts",
+    { src: "~/plugins/persistedState.client.js" },
+  ],
 
-  // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
 
-  // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
-  buildModules: [
-    // https://go.nuxtjs.dev/typescript
-    "@nuxt/typescript-build",
-  ],
+  buildModules: ["@nuxt/typescript-build", "@nuxtjs/dotenv"],
 
   // cookie-universal-nuxt
   target: "server",
 
-  // Modules: https://go.nuxtjs.dev/config-modules
-  modules: ["@nuxtjs/axios", "cookie-universal-nuxt"],
+  modules: ["@nuxtjs/axios", "cookie-universal-nuxt", "bootstrap-vue/nuxt"],
+  bootstrapVue: {},
 
   axios: {
-    // baseURL: "https://taj.stg.ebsoc.co.kr",
+    baseURL: "http://localhost:8080",
     // headers: {
     //   common: {
     //     "Content-Type": "application/json;charset=UTF-8",
@@ -71,8 +63,7 @@ export default {
   },
 
   router: {
-    middleware: ["auth"],
-    // middleware: ["stats", "auth"],
+    middleware: ["auth", "router"],
   },
 
   env: {

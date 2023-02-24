@@ -1,54 +1,64 @@
 <template>
   <div>
-    <br />
-    <Todos />
-    <br />
-    <nuxt-link to="/posts" class="btn btn-success">posts</nuxt-link>
-    <nuxt-link to="/tstest" class="btn btn-warning">typescript</nuxt-link>
-    <nuxt-link to="/node" class="btn btn-info">nodejs</nuxt-link>
-    <br />
-    <br />
-    <div>
-      <p style="text-align: center">AI 이미지 생성기</p>
-      <div style="text-align: center">
-        <input type="text" v-model="aiText" @keyup.enter="getDrawingAi()" />
-        <button @click="getDrawingAi()">이미지 생성</button>
-      </div>
-      <div class="ai_img_wrap">
-        <div
-          class="ai_img"
-          :style="{ 'background-image': `url(${aiImg})` }"
-          v-if="aiImg"
-        ></div>
-        <div v-else-if="aiLoading">{{ ailoadingText }}</div>
-        <div v-else></div>
-      </div>
-    </div>
-    <p class="chat_title">AI 채팅</p>
-    <div class="chat_wrap">
-      <div class="chat_text" ref="chatText">
-        <div
-          v-for="(item, idx) in chatMessage"
-          :key="idx"
-          :class="`chat_talk chat_${item.target}`"
-        >
-          {{ item.message }}
+    <div class="wrap">
+      <br />
+      <Todos />
+      <br />
+      <nuxt-link to="/info" class="btn btn-success">info</nuxt-link>
+      <nuxt-link to="/type" class="btn btn-warning">typescript</nuxt-link>
+      <nuxt-link to="/node" class="btn btn-info">nodejs</nuxt-link>
+      <nuxt-link to="/chat" class="btn btn-danger">chat</nuxt-link>
+      <br />
+      <br />
+      <div>
+        <p class="title">AI 이미지 생성기</p>
+        <div class="img_input">
+          <input
+            class="form-control"
+            type="text"
+            v-model="aiText"
+            @keyup.enter="getDrawingAi()"
+          />
+          <button class="btn btn-secondary" @click="getDrawingAi()">
+            이미지 생성
+          </button>
+        </div>
+        <div class="ai_img_wrap">
+          <div
+            class="ai_img"
+            :style="{ 'background-image': `url(${aiImg})` }"
+            v-if="aiImg"
+          ></div>
+          <div v-else-if="aiLoading">{{ ailoadingText }}</div>
+          <div v-else></div>
         </div>
       </div>
-      <div class="chat_input">
-        <input
-          type="text"
-          v-model="myMessage"
-          @keyup.enter="getChatAi()"
-        /><button @click="getChatAi()">전송</button>
+      <p class="title">AI 채팅</p>
+      <div class="chat_wrap">
+        <div class="chat_text" ref="chatText">
+          <div
+            v-for="(item, idx) in chatMessage"
+            :key="idx"
+            :class="`chat_talk chat_${item.target}`"
+          >
+            {{ item.message }}
+          </div>
+        </div>
+        <div class="chat_input">
+          <input
+            class="form-control"
+            type="text"
+            v-model="myMessage"
+            @keyup.enter="getChatAi()"
+          /><button class="btn btn-secondary" @click="getChatAi()">전송</button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import moment from "moment";
-import Util from "../module/Util";
+import Moment from "moment";
 import { Configuration, OpenAIApi } from "openai";
 
 interface Data {
@@ -62,7 +72,7 @@ interface Data {
   myMessage: string;
   aiMessage: string;
   chatMessage: { target: string | undefined; message: string | undefined }[];
-  apiKeys: string;
+  apiKeys: any;
 }
 
 export default {
@@ -79,7 +89,7 @@ export default {
       myMessage: "",
       aiMessage: "",
       chatMessage: [],
-      apiKeys: "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",
+      apiKeys: process.env.GPT_KEYS,
     };
   },
   // 페이지 불러오기 전 비동기 실행, pages 컴포넌트에서만 사용가능, this 사용 불가능, 첫번째 파라미터로 context를 받아와 데이터를 사용, 리턴된 값은 자동으로 data(){} 에 머지시킴, async/await 사용가능
@@ -88,7 +98,7 @@ export default {
     return { name: "park" };
   },
   mounted() {
-    const newDate: string = moment().format("YYYY-MM-DD HH:mm:ss");
+    const newDate: string = Moment().format("YYYY-MM-DD HH:mm:ss");
   },
   methods: {
     async getDrawingAi() {
@@ -101,16 +111,14 @@ export default {
       }, 1000);
 
       let configuration = new Configuration({
-        organization: "org-1exn0O3577hMkoYkQkrwM4gT",
         apiKey: this.apiKeys,
       });
       const openai = new OpenAIApi(configuration);
       const response = await openai
         .createImage({
           prompt: this.aiText,
-          n: 5,
-          size: "256x256",
-          user: "wef1232qwef",
+          n: 1,
+          size: "1024x1024",
         })
         .then((res) => {
           this.aiImg = res.data.data[0].url;
@@ -172,6 +180,13 @@ export default {
 };
 </script>
 <style scoped>
+.img_input {
+  text-align: center;
+}
+.img_input > .form-control {
+  width: auto;
+  display: inline-block;
+}
 .ai_img_wrap {
   display: flex;
   justify-content: center;
@@ -193,11 +208,6 @@ export default {
   height: 100%;
   background-size: contain;
   background-repeat: no-repeat;
-}
-.chat_title {
-  margin-top: 50px;
-  font-size: 20px;
-  text-align: center;
 }
 .chat_wrap {
   width: 100%;

@@ -1,6 +1,11 @@
 #__layout {
-  width: 500px;
+  width: 100%;
   margin: 30px auto;
+}
+.wrap {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 .page-enter-active,
 .page-leave-active {
@@ -14,4 +19,14 @@
   display: flex;
   align-items: center;
   min-width: 100px;
+}
+.custom-control-label {
+  margin-top: 5px !important;
+  margin-left: 5px !important;
+  cursor: pointer;
+}
+.title {
+  margin-top: 50px;
+  font-size: 26px;
+  text-align: center;
 }

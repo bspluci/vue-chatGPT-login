@@ -42,7 +42,9 @@
         <input
           ref="inputPhone"
           type="text"
+          maxlength="13"
           v-model="param.phoneNumber"
+          @keyup="phoneValidation()"
           @keypress.enter="userRegister()"
         />
       </div>
@@ -89,11 +91,11 @@ export default {
       Object.keys(this.param).forEach((key) => this.param[key as keyof Param]);
     },
     async userRegister() {
-      if (this.userValidation()) return;
+      if (!this.userValidation()) return;
 
       let res = await Util.post({
         self: this,
-        url: "http://localhost:8080/api/member/register",
+        url: "/api/member/register",
         params: this.param,
       })
         .then((res: Res) => {
@@ -105,6 +107,11 @@ export default {
         .catch((err) => {
           console.log(err);
         });
+    },
+    phoneValidation() {
+      this.param.phoneNumber = this.param.phoneNumber
+        .replace(/[^0-9]/g, "")
+        .replace(/^(\d{2,3})(\d{3,4})(\d{4})$/, `$1-$2-$3`);
     },
     userValidation() {
       let userKey = Object.keys(this.param).filter(
@@ -132,7 +139,7 @@ export default {
 
       if (target) {
         alert(`${target} 입력해주세요.`);
-        return true;
+        return false;
       }
       this.focusInput(ele);
     },

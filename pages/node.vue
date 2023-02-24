@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="wrap">
     <br />
     <div>
       <button @click="loadHtml('nav')" class="btn btn-warning">
@@ -48,69 +48,69 @@
     <br />
 
     <div>
-      <h2 style="font-size: 20px; font-weight: bold; text-align: center">
-        오늘의 할일 목록
-      </h2>
+      <h2 class="sub_title">오늘의 할일 목록</h2>
+      <div>
+        <button class="btn btn-light" @click="loadTodo()">목록 초기화</button>
+      </div>
       <ul class="list-group">
         <li v-for="(item, idx) in todoList" :key="idx" class="list-group-item">
           <div
-            @click="showModal(item)"
             :class="item.completed ? 'completed' : ''"
+            v-b-modal.fixTodo
             style="cursor: pointer"
-            data-bs-toggle="modal"
-            data-bs-target="#staticBackdrop"
+            @click="selectItem = item"
           >
-            {{ item.title }} <span>{{ item.date }}</span>
+            <p>No. {{ item.id }}</p>
+            <div>Todo : {{ item.title }}</div>
+            <div>
+              <span>Date : {{ item.date }} &nbsp;</span>
+              <span>Writer : {{ item.user }}</span>
+            </div>
           </div>
-          <button
-            class="btn btn-success"
-            style="
-              --bs-btn-padding-y: 0.25rem;
-              --bs-btn-padding-x: 0.5rem;
-              --bs-btn-font-size: 0.75rem;
-              margin-left: 10px;
-            "
-            @click="completedTodo(item)"
-            v-if="!item.completed"
-          >
-            완료
-          </button>
-          <button
-            class="btn btn-secondary"
-            style="
-              --bs-btn-padding-y: 0.25rem;
-              --bs-btn-padding-x: 0.5rem;
-              --bs-btn-font-size: 0.75rem;
-              margin-left: 10px;
-            "
-            @click="completedTodo(item)"
-            v-else
-          >
-            취소
-          </button>
-          <button
-            class="btn btn-danger"
-            style="
-              --bs-btn-padding-y: 0.25rem;
-              --bs-btn-padding-x: 0.5rem;
-              --bs-btn-font-size: 0.75rem;
-              margin: 0 10px;
-            "
-            @click="deleteTodo(item.id)"
-          >
-            삭제
-          </button>
+          <div>
+            <button
+              class="btn btn-success todo_btn"
+              @click="completedTodo(item)"
+              v-if="!item.completed"
+            >
+              완료
+            </button>
+            <button
+              class="btn btn-secondary todo_btn"
+              @click="completedTodo(item)"
+              v-else
+            >
+              취소
+            </button>
+            <button
+              class="btn btn-danger todo_btn"
+              @click="deleteTodo(item.id)"
+            >
+              삭제
+            </button>
+          </div>
         </li>
       </ul>
+      <br />
+      <div class="wrap_input">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="검색어를 입력해주세요."
+          v-model="searchTitle"
+          @keypress.enter="searchTodo()"
+        />
+        <button class="btn btn-danger" @click="searchTodo()">검색</button>
+      </div>
     </div>
 
-    <div class="list_detail"><Detail :selectItem="selectItem" /></div>
+    <DetailTodo :selectItem="selectItem" />
   </div>
 </template>
 
 <script lang="ts">
-import Detail from "@/components/detail.vue";
-import Util from "@/module/Util";
+import DetailTodo from "@/components/DetailTodo.vue";
+import Util from "../module/Util";
 
 interface ListItem {
   date: string;
@@ -119,18 +119,66 @@ interface ListItem {
   completed: boolean;
 }
 
+interface Result {
+  code: string;
+  data: {
+    completed: boolean;
+    createAt: string;
+    date: string;
+    id: string;
+    title: string;
+    updateAt: string;
+    user: string;
+  }[];
+  message: string;
+  status: number;
+}
+
+interface Files {
+  lastMedified: number;
+  lastModifiedDate: Date;
+  name: string;
+  size: number;
+  type: string;
+  webkitRelativePath: string;
+}
+
+interface SelectTodo {
+  completed: boolean;
+  createdAt: string;
+  date: string;
+  id: string;
+  title: string;
+  updateAt: string;
+  user: string;
+}
+
+interface Data<T> {
+  todoParam: {
+    date: string;
+    title: string;
+    user: string;
+  };
+  todoList: T[] | {};
+  selectItem: T | {};
+  searchTitle: string;
+  profileImage: any;
+}
+
 export default {
   name: "node",
-  components: { Detail },
-  data() {
+  components: { DetailTodo },
+  data(): Data<SelectTodo> {
     return {
-      baseUrl: "http://localhost:8080",
       todoParam: {
         date: "",
         title: "",
+        user: "",
       },
-      todoList: [{}],
+      todoList: {},
       selectItem: {},
+      searchTitle: "",
+      profileImage: null,
     };
   },
   async mounted() {
@@ -140,30 +188,33 @@ export default {
     async loadHtml(target: string) {
       const res = await Util.get({
         self: this,
-        url: `${this.baseUrl}/html/${target}`,
+        url: `/html/${target}`,
       });
 
       target === "nav" && this.$refs.nav instanceof HTMLDivElement
-        ? (this.$refs.nav.innerHTML = res)
+        ? (this.$refs.nav.innerHTML = res.data)
         : target === "slider" && this.$refs.slider instanceof HTMLDivElement
-        ? (this.$refs.slider.innerHTML = res)
+        ? (this.$refs.slider.innerHTML = res.data)
         : null;
     },
+
     async loadTodo() {
-      const res: { data: { [key: string]: string }[] } = await Util.get({
+      const res: { data: Result } = await Util.get({
         self: this,
-        url: `${this.baseUrl}/api/todo/list`,
+        url: `/api/todo/list`,
       });
 
-      this.todoList = res.data;
+      this.todoList = res.data.data;
     },
+
     async saveTodo() {
       if (!this.todoParam.title) return alert("할일을 입력해주세요.");
       if (!this.todoParam.date) return alert("날짜를 입력해주세요.");
+      this.todoParam.user = this.$store.state.member.memberInfo.email;
 
       await Util.post({
         self: this,
-        url: `${this.baseUrl}/api/todo/create`,
+        url: `/api/todo/create`,
         params: this.todoParam,
       })
         .then((res: { [key: string]: any }) => {
@@ -181,16 +232,17 @@ export default {
           console.log(err);
         });
     },
+
     async deleteTodo(id: number) {
       let condition: any = confirm("정말 삭제하시겠습니까?");
       if (!condition) return;
 
-      let url = `${this.baseUrl}/api/todo/list/delete`;
-      let params = { id };
+      let url = `/api/todo/list/delete`;
+      let params = { id, user: this.$store.state.member.memberInfo.email };
 
       await Util.post({ self: this, url, params })
         .then((res: { [key: string]: any }) => {
-          alert(res.data.message);
+          res.data.status === 200 ? alert("삭제가 완료됐습니다.") : null;
         })
         .catch((err) => {
           console.log(err);
@@ -198,13 +250,14 @@ export default {
 
       this.loadTodo();
     },
+
     async completedTodo(item: ListItem) {
-      let url = `${this.baseUrl}/api/todo/list/update`;
+      let url = `/api/todo/list/update`;
       let params = { id: item.id, completed: !item.completed };
 
       await Util.post({ self: this, url, params })
         .then((res: { [key: string]: any }) => {
-          console.log(res.data);
+          console.log(res);
         })
         .catch((err) => {
           console.log(err);
@@ -212,19 +265,51 @@ export default {
 
       this.loadTodo();
     },
-    showModal(item: ListItem) {
-      this.selectItem = item;
+
+    async searchTodo() {
+      if (this.searchTitle?.length < 2)
+        return alert("검색어는 두글자 이상 입력해주세요.");
+
+      let url = `/api/todo/search`;
+      let params = { title: this.searchTitle };
+
+      await Util.get({ self: this, url, params }).then((res) => {
+        if (res.status === 200) {
+          this.todoList = res.data.data;
+          this.searchTitle = "";
+        }
+      });
     },
   },
 };
 </script>
 
 <style lang="scss" scoped>
+.sub_title {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+}
 .list-group-item {
   display: flex;
+  justify-content: space-between;
   align-items: center;
 }
 .list-group-item > .completed {
   text-decoration: line-through;
+}
+.todo_btn {
+  --bs-btn-padding-y: 0.25rem;
+  --bs-btn-padding-x: 0.5rem;
+  --bs-btn-font-size: 0.75rem;
+}
+.wrap_input {
+  display: flex;
+}
+.wrap_input input {
+  margin-right: 10px;
+}
+.wrap_input button {
+  min-width: 120px;
 }
 </style>

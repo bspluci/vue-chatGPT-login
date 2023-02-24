@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div style="display: flex; align-items: center">
+    <div style="display: flex; align-items: center; padding: 0 20px">
       <nuxt-link to="/" class="btn btn-primary" style="margin-right: 10px"
         >HOME</nuxt-link
       >

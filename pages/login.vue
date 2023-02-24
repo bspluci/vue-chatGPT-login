@@ -1,9 +1,10 @@
 <template>
-  <div>
+  <div class="wrap">
     <br />
     <div style="margin-bottom: 15px">
       <label class="input-label">이메일</label>
       <input
+        class="form-control"
         ref="inputEmail"
         type="text"
         v-model="param.email"
@@ -13,6 +14,7 @@
     <div>
       <label class="input-label">비밀번호</label>
       <input
+        class="form-control"
         ref="inputPassword"
         type="password"
         v-model="param.password"
@@ -20,10 +22,12 @@
       />
     </div>
     <br />
-    <button class="btn btn-success" @click="login()">로그인</button>
-    <button class="btn btn-warning" @click="$router.push('/register')">
-      회원가입
-    </button>
+    <div class="text-center">
+      <button class="btn btn-success" @click="login()">로그인</button>
+      <button class="btn btn-warning" @click="$router.push('/register')">
+        회원가입
+      </button>
+    </div>
   </div>
 </template>
 
@@ -57,7 +61,7 @@ export default {
     ...mapMutations("auth", {
       setAuth: "setAuth",
     }),
-    ...mapMutations("memberInfo", {
+    ...mapMutations("member", {
       setMemberInfo: "setMemberInfo",
     }),
     passwordCursor() {
@@ -69,7 +73,7 @@ export default {
     async login() {
       let resLogin = await Util.post({
         self: this,
-        url: "http://localhost:8080/api/member/login",
+        url: "/api/member/login",
         params: this.param,
       });
 
@@ -78,13 +82,16 @@ export default {
 
         await Util.post({
           self: this,
-          url: "http://localhost:8080/api/member/userInfo",
+          url: "/api/member/userInfo",
           params: this.param,
         }).then((res: Res) => {
           if (res.data.status === 200) {
             this.setMemberInfo(res.data.data);
+            this.$store.commit("activeTime/setFirstTime", true);
+            this.$router.push("/");
+          } else {
+            this.$router.push("/login");
           }
-          this.$router.push("/");
         });
       } else {
         this.param.email = "";
