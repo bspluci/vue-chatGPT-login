@@ -8,6 +8,7 @@
       <nuxt-link to="/type" class="btn btn-warning">typescript</nuxt-link>
       <nuxt-link to="/node" class="btn btn-info">nodejs</nuxt-link>
       <nuxt-link to="/chat" class="btn btn-danger">chat</nuxt-link>
+      <nuxt-link to="/groupChat" class="btn btn-secondary">socket.io</nuxt-link>
       <br />
       <br />
       <div>

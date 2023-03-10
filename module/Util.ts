@@ -19,15 +19,15 @@ interface Headers {
 }
 
 export default class Util {
-  public static async post(params: Params) {
-    return Util.getOrPost({ ...params, ...{ divi: "post" } });
+  static async post(params: Params) {
+    return this.getOrPost({ ...params, ...{ divi: "post" } });
   }
 
-  public static async get(params: Params) {
-    return Util.getOrPost({ ...params, ...{ divi: "get" } });
+  static async get(params: Params) {
+    return this.getOrPost({ ...params, ...{ divi: "get" } });
   }
 
-  public static async getOrPost({
+  static async getOrPost({
     self,
     url,
     params,
@@ -59,7 +59,7 @@ export default class Util {
     }
   }
 
-  public static async logout(self: Vue) {
+  static async logout(self: Vue) {
     let store: Store<RootState> = self.$store;
 
     store.commit("auth/setAuth", null);
@@ -67,7 +67,7 @@ export default class Util {
     self.$cookies.removeAll();
   }
 
-  public static getImageReSize(
+  static getImageReSize(
     profileWrap: HTMLDivElement,
     profileImg: HTMLImageElement
   ) {
@@ -89,5 +89,26 @@ export default class Util {
         profileImg.style.height = "100%";
       }
     }
+  }
+
+  static getByteLength(str: string): number {
+    let byteLength = 0;
+    for (let i = 0; i < str.length; i++) {
+      let charCode = str.charCodeAt(i);
+      if (charCode <= 127) {
+        // 영문자일 경우
+        byteLength++;
+      } else if (charCode <= 0x7ff) {
+        // 한글이 아닌 2바이트 문자일 경우
+        byteLength += 2;
+      } else if (charCode <= 0xffff) {
+        // 한글일 경우
+        byteLength += 3;
+      } else {
+        // 이 외의 경우(예: 이모지)
+        byteLength += 4;
+      }
+    }
+    return byteLength;
   }
 }

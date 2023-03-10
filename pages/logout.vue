@@ -24,11 +24,9 @@ export default {
       setMemberInfo: "setMemberInfo",
     }),
     async logout() {
-      const query = this.$route.query;
-      const message =
-        query.time === "over"
-          ? "사용시간이 만료되어 로그아웃됩니다."
-          : "로그아웃 되었습니다.";
+      const message = this.$route.query.activeTime
+        ? "사용시간이 만료되어 로그아웃됩니다."
+        : "로그아웃 되었습니다.";
 
       this.$store.commit("auth/resetStore");
       this.$store.commit("activeTime/resetStore");

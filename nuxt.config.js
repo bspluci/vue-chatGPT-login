@@ -16,11 +16,15 @@ export default {
       { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
       {
         rel: "stylesheet",
+        href: "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css",
       },
     ],
     script: [
       {
-        src: "https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js",
+        src: "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js",
+      },
+      {
+        src: "https://cdn.jsdelivr.net/npm/swiper@9/swiper-element-bundle.min.js",
       },
     ],
   },

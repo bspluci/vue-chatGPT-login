@@ -93,7 +93,7 @@ export default {
     async userRegister() {
       if (!this.userValidation()) return;
 
-      let res = await Util.post({
+      await Util.post({
         self: this,
         url: "/api/member/register",
         params: this.param,

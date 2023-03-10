@@ -10,9 +10,9 @@
       </button>
     </div>
     <div>
-      <div ref="nav"></div>
+      <div ref="nav" class="nav_wrap"></div>
       <br />
-      <div ref="slider"></div>
+      <div ref="slider" class="slider_wrap"></div>
     </div>
     <br />
 
@@ -24,11 +24,13 @@
           class="form-control"
           name="title"
           v-model="todoParam.title"
+          @input="onInput"
           @keypress.enter="saveTodo()"
           ref="title"
         />
-      </div>
-      <div class="form-group">
+        <p style="text-align: right">
+          {{ byteLength }} / {{ byteLengthLimite }} byte
+        </p>
         <label>날짜</label>
         <input
           type="text"
@@ -38,7 +40,7 @@
           @keypress.enter="saveTodo()"
         />
       </div>
-      <div style="text-align: center; margin-top: 15px">
+      <div style="text-align: center">
         <button type="submit" class="btn btn-primary" @click="saveTodo()">
           등록
         </button>
@@ -54,20 +56,15 @@
       </div>
       <ul class="list-group">
         <li v-for="(item, idx) in todoList" :key="idx" class="list-group-item">
-          <div
-            :class="item.completed ? 'completed' : ''"
-            v-b-modal.fixTodo
-            style="cursor: pointer"
-            @click="selectItem = item"
-          >
-            <p>No. {{ item.id }}</p>
-            <div>Todo : {{ item.title }}</div>
-            <div>
-              <span>Date : {{ item.date }} &nbsp;</span>
-              <span>Writer : {{ item.user }}</span>
+          <div :class="item.completed ? 'completed' : ''">
+            <div>No. {{ item.id }}</div>
+            <div @click="selectItem = item" v-b-modal.fixTodo>
+              Todo : {{ item.title }}
             </div>
+            <div>Date : {{ item.date }}</div>
+            <div>Writer : {{ item.user }}</div>
           </div>
-          <div>
+          <div style="display: flex">
             <button
               class="btn btn-success todo_btn"
               @click="completedTodo(item)"
@@ -163,6 +160,9 @@ interface Data<T> {
   selectItem: T | {};
   searchTitle: string;
   profileImage: any;
+  byteLength: number;
+  byteLengthLimite: number;
+  oldTodoTitle: string;
 }
 
 export default {
@@ -179,6 +179,9 @@ export default {
       selectItem: {},
       searchTitle: "",
       profileImage: null,
+      byteLength: 0,
+      byteLengthLimite: 80,
+      oldTodoTitle: "",
     };
   },
   async mounted() {
@@ -210,7 +213,7 @@ export default {
     async saveTodo() {
       if (!this.todoParam.title) return alert("할일을 입력해주세요.");
       if (!this.todoParam.date) return alert("날짜를 입력해주세요.");
-      this.todoParam.user = this.$store.state.member.memberInfo.email;
+      this.todoParam.user = this.$store.state.member.memberInfo.name;
 
       await Util.post({
         self: this,
@@ -238,7 +241,7 @@ export default {
       if (!condition) return;
 
       let url = `/api/todo/list/delete`;
-      let params = { id, user: this.$store.state.member.memberInfo.email };
+      let params = { id, user: this.$store.state.member.memberInfo.name };
 
       await Util.post({ self: this, url, params })
         .then((res: { [key: string]: any }) => {
@@ -280,11 +283,32 @@ export default {
         }
       });
     },
+
+    onInput() {
+      this.byteLength = Util.getByteLength(this.todoParam.title);
+
+      if (this.byteLength <= this.byteLengthLimite) {
+        this.oldTodoTitle = this.todoParam.title;
+      } else {
+        this.todoParam.title = this.oldTodoTitle;
+        this.byteLength = Util.getByteLength(this.todoParam.title);
+      }
+    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
+.nav_wrap {
+  margin-top: 20px;
+  padding: 0 10px;
+}
+.nav_wrap .navbar {
+  background: #fff !important;
+}
+.slider_wrap {
+  background: #fff;
+}
 .sub_title {
   font-size: 20px;
   font-weight: bold;
@@ -299,6 +323,7 @@ export default {
   text-decoration: line-through;
 }
 .todo_btn {
+  width: 55px;
   --bs-btn-padding-y: 0.25rem;
   --bs-btn-padding-x: 0.5rem;
   --bs-btn-font-size: 0.75rem;

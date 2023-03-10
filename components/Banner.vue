@@ -77,6 +77,8 @@ export default {
       "battlefield",
       "cathedrals",
       "temples",
+      "desert",
+      "oasis",
     ];
 
     this.drawingText = `${

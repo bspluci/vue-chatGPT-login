@@ -87,7 +87,7 @@ export default {
         }).then((res: Res) => {
           if (res.data.status === 200) {
             this.setMemberInfo(res.data.data);
-            this.$store.commit("activeTime/setFirstTime", true);
+            this.$store.commit("activeTime/setFirstTime", false);
             this.$router.push("/");
           } else {
             this.$router.push("/login");

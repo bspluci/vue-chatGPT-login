@@ -75,7 +75,6 @@ export default {
   },
   async mounted() {
     this.userId = this.$store.state.member.memberInfo._id;
-    this.getAllMemberList();
   },
   methods: {
     async getAllMemberList() {
@@ -107,23 +106,7 @@ export default {
     },
 
     async chatStart(item: MemberInfo) {
-      interface Params {
-        _id: string;
-      }
-
-      let url = "/api/chat/startUserChat";
-      let params: Params = {
-        _id: item._id,
-      };
-
-      await Util.post({ self: this, url, params })
-        .then((res) => {
-          console.log(res.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-
+      (this.$parent as any).createChatRoom(item);
       this.$bvModal.hide("memberList");
     },
   },

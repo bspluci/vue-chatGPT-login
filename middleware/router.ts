@@ -14,10 +14,10 @@ const AuthMiddleware: Middleware = ({ store, route, redirect }) => {
   const lastActiveTime = store.state.activeTime.lastActiveTime || Date.now();
   const now = Date.now();
   const idleTime = now - lastActiveTime;
-  const timeLimite = 60 * 60 * 1000; // 1분
+  const timeLimite = 60 * 60 * 1000; // 60분
 
   if (idleTime > timeLimite) {
-    redirect("/logout?time=over");
+    redirect("/logout", { activeTime: "true" });
   } else {
     store.commit("activeTime/setLastActiveTime", now);
   }

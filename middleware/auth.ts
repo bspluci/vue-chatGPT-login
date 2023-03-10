@@ -12,7 +12,9 @@ export default function ({ store, redirect, route, $cookies }: Context) {
       store.state.member.memberInfo = null;
       $cookies.removeAll();
 
-      alert("로그인이 필요한 페이지 입니다.");
+      process.client
+        ? alert("로그인이 필요한 페이지 입니다.")
+        : console.log("로그인이 필요한 페이지 입니다.");
     }
     return redirect("/login");
   }
